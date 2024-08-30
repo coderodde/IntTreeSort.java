@@ -4,11 +4,11 @@ import java.util.Arrays;
 import java.util.Random;
 
 public class Benchmark {
-
+//    
     private static final int WARMUP_INT_ARRAY_LENGTH = 100_000;
     private static final int WARMUP_INT_UPPER_BOUND = 1_000;
     private static final int RANDOM_DATA_LENGTH = 1_000_000;
-    private static final int SPARSE_DATA_LENGTH = 10_000_000;
+    private static final int SPARSE_DATA_LENGTH = 100_000_000;
     private static final int SPARSE_DATA_UPPER_BOUND = 100;
     private static final int DEGENERATE_DATA_LENGTH = 2 << 14;
     
@@ -23,7 +23,8 @@ public class Benchmark {
         warmup(random);
         long endTime = System.currentTimeMillis();
         
-        System.out.printf("Warmed up in %d milliseconds.", endTime - startTime);
+        System.out.printf("Warmed up in %d milliseconds.\n",
+                          endTime - startTime);
     
         System.out.println("Benchmarking on random data:");
         
@@ -46,6 +47,7 @@ public class Benchmark {
         
         IntTreeSortV1.sort(array1);
         IntTreeSortV2.sort(array2);
+        IntTreeSortV3.sort(array3);
         Arrays.sort(array4);
         
         System.out.println();
@@ -75,6 +77,7 @@ public class Benchmark {
     private static void benchmarkOnRandomIntData(final Random random) {
         final int[] array1 = getRandomIntArray(random);
         final int[] array2 = array1.clone();
+        final int[] array3 = array1.clone();
         final int[] array4 = array1.clone();
         
         long startTime = System.currentTimeMillis();
@@ -83,7 +86,7 @@ public class Benchmark {
         
         long endTime = System.currentTimeMillis();
         
-        System.out.printf("V1: %d milliseconds.\n",
+        System.out.printf("V1:  %d milliseconds.\n",
                           endTime - startTime);
         
         startTime = System.currentTimeMillis();
@@ -92,7 +95,16 @@ public class Benchmark {
         
         endTime = System.currentTimeMillis();
         
-        System.out.printf("V2: %d milliseconds.\n",
+        System.out.printf("V2:  %d milliseconds.\n",
+                          endTime - startTime);
+        
+        startTime = System.currentTimeMillis();
+        
+        IntTreeSortV3.sort(array3);
+        
+        endTime = System.currentTimeMillis();
+        
+        System.out.printf("V3:  %d milliseconds.\n",
                           endTime - startTime);
         
         startTime = System.currentTimeMillis();
@@ -101,16 +113,18 @@ public class Benchmark {
         
         endTime = System.currentTimeMillis();
         
-        System.out.printf("Arrays.sort: %d milliseconds.\n",
+        System.out.printf("JDK: %d milliseconds.\n",
                           endTime - startTime);
         
         System.out.printf("Algorithms agree: %b.\n", 
                           Arrays.equals(array1, array2) &&
+                          Arrays.equals(array1, array3) &&
                           Arrays.equals(array1, array4));
         
-        System.out.printf("V1 sorted: %b.\n", isSorted(array1));
-        System.out.printf("V2 sorted: %b.\n", isSorted(array2));
-        System.out.printf("Arrays.sort sorted: %b.\n", isSorted(array4));
+        System.out.printf("V1  sorted: %b.\n", isSorted(array1));
+        System.out.printf("V2  sorted: %b.\n", isSorted(array2));
+        System.out.printf("V3  sorted: %b.\n", isSorted(array3));
+        System.out.printf("JDK sorted: %b.\n", isSorted(array4));
         
         System.out.println();
     }
@@ -128,38 +142,7 @@ public class Benchmark {
     private static void benchmarkOnDegenerateData(final Random random) {
         final int[] array1 = getDegenerateData(random);
         final int[] array2 = array1.clone();
-        
-        
-        long startTime = System.currentTimeMillis();
-        
-        IntTreeSortV1.sort(array1);
-        
-        long endTime = System.currentTimeMillis();
-        
-        System.out.printf("V1: %d milliseconds.\n",
-                          endTime - startTime);
-        
-        startTime = System.currentTimeMillis();
-        
-        IntTreeSortV2.sort(array2);
-        
-        endTime = System.currentTimeMillis();
-        
-        System.out.printf("V2: %d milliseconds.\n",
-                          endTime - startTime);
-        
-        System.out.printf("Algorithms agree: %b.\n", 
-                          Arrays.equals(array1, array2));
-        
-        System.out.printf("V1 sorted: %b.\n", isSorted(array1));
-        System.out.printf("V2 sorted: %b.\n", isSorted(array2));
-        
-        System.out.println();
-    }
-    
-    private static void benchmarkOnSparseData(final Random random) {
-        final int[] array1 = getSparseData(random);
-        final int[] array2 = array1.clone();
+        final int[] array3 = array1.clone();
         final int[] array4 = array1.clone();
         
         long startTime = System.currentTimeMillis();
@@ -168,7 +151,7 @@ public class Benchmark {
         
         long endTime = System.currentTimeMillis();
         
-        System.out.printf("V1: %d milliseconds.\n",
+        System.out.printf("V1:  %d milliseconds.\n",
                           endTime - startTime);
         
         startTime = System.currentTimeMillis();
@@ -177,7 +160,16 @@ public class Benchmark {
         
         endTime = System.currentTimeMillis();
         
-        System.out.printf("V2: %d milliseconds.\n",
+        System.out.printf("V2:  %d milliseconds.\n",
+                          endTime - startTime);
+        
+        startTime = System.currentTimeMillis();
+        
+        IntTreeSortV3.sort(array3);
+        
+        endTime = System.currentTimeMillis();
+        
+        System.out.printf("V3:  %d milliseconds.\n",
                           endTime - startTime);
         
         startTime = System.currentTimeMillis();
@@ -186,16 +178,73 @@ public class Benchmark {
         
         endTime = System.currentTimeMillis();
         
-        System.out.printf("Arrays.sort: %d milliseconds.\n",
+        System.out.printf("JDK: %d milliseconds.\n",
                           endTime - startTime);
         
         System.out.printf("Algorithms agree: %b.\n", 
                           Arrays.equals(array1, array2) &&
+                          Arrays.equals(array1, array3) &&
                           Arrays.equals(array1, array4));
         
-        System.out.printf("V1 sorted: %b.\n", isSorted(array1));
-        System.out.printf("V2 sorted: %b.\n", isSorted(array2));
-        System.out.printf("Arrays.sort sorted: %b.\n", isSorted(array4));
+        System.out.printf("V1  sorted: %b.\n", isSorted(array1));
+        System.out.printf("V2  sorted: %b.\n", isSorted(array2));
+        System.out.printf("V3  sorted: %b.\n", isSorted(array3));
+        System.out.printf("JDK sorted: %b.\n", isSorted(array4));
+        
+        System.out.println();
+    }
+    
+    private static void benchmarkOnSparseData(final Random random) {
+        final int[] array1 = getSparseData(random);
+        final int[] array2 = array1.clone();
+        final int[] array3 = array1.clone();
+        final int[] array4 = array1.clone();
+        
+        long startTime = System.currentTimeMillis();
+        
+        IntTreeSortV1.sort(array1);
+        
+        long endTime = System.currentTimeMillis();
+        
+        System.out.printf("V1:  %d milliseconds.\n",
+                          endTime - startTime);
+        
+        startTime = System.currentTimeMillis();
+        
+        IntTreeSortV2.sort(array2);
+        
+        endTime = System.currentTimeMillis();
+        
+        System.out.printf("V2:  %d milliseconds.\n",
+                          endTime - startTime);
+        
+        startTime = System.currentTimeMillis();
+        
+        IntTreeSortV3.sort(array3);
+        
+        endTime = System.currentTimeMillis();
+        
+        System.out.printf("V3:  %d milliseconds.\n",
+                          endTime - startTime);
+        
+        startTime = System.currentTimeMillis();
+        
+        Arrays.sort(array4);
+        
+        endTime = System.currentTimeMillis();
+        
+        System.out.printf("JDK: %d milliseconds.\n",
+                          endTime - startTime);
+        
+        System.out.printf("Algorithms agree: %b.\n", 
+                          Arrays.equals(array1, array2) &&
+                          Arrays.equals(array1, array3) &&
+                          Arrays.equals(array1, array4));
+        
+        System.out.printf("V1  sorted: %b.\n", isSorted(array1));
+        System.out.printf("V2  sorted: %b.\n", isSorted(array2));
+        System.out.printf("V2  sorted: %b.\n", isSorted(array3));
+        System.out.printf("JDK sorted: %b.\n", isSorted(array4));
         
         System.out.println();
     }
