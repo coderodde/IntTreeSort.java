@@ -4,7 +4,7 @@ import java.util.Arrays;
 import java.util.Random;
 
 public class Benchmark {
-//    
+   
     private static final int WARMUP_INT_ARRAY_LENGTH = 100_000;
     private static final int WARMUP_INT_UPPER_BOUND = 1_000;
     private static final int RANDOM_DATA_LENGTH = 1_000_000;

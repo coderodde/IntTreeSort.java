@@ -1,7 +1,9 @@
 package com.github.coderodde.util;
 
 /**
- *
+ * This class implements the variation of integer tree sort where instead of 
+ * collision chains we use collision trees.
+ * 
  * @author Rodion "rodde" Efremov
  * @version 1.0.0 (Aug 30, 2024)
  * @since 1.0.0 (Aug 30, 2024)
