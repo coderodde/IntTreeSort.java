@@ -8,6 +8,8 @@ public class Benchmark {
     private static final int WARMUP_INT_ARRAY_LENGTH = 100_000;
     private static final int WARMUP_INT_UPPER_BOUND = 1_000;
     private static final int RANDOM_DATA_LENGTH = 1_000_000;
+    private static final int SPARSE_DATA_LENGTH = 10_000_000;
+    private static final int SPARSE_DATA_UPPER_BOUND = 100;
     private static final int DEGENERATE_DATA_LENGTH = 2 << 14;
     
     public static void main(String[] args) {
@@ -26,16 +28,25 @@ public class Benchmark {
         System.out.println("Benchmarking on random data:");
         
         benchmarkOnRandomIntData(random);
+        
+        System.out.println("Benchmarking on degenerate data:");
+        
         benchmarkOnDegenerateData(random);
+        
+        System.out.println("Benchmarking on sparse data:");
+        
+        benchmarkOnSparseData(random);
     }
     
     private static void warmup(final Random random) {
         final int[] array1 = getWarmupArray(random);
         final int[] array2 = array1.clone();
         final int[] array3 = array1.clone();
+        final int[] array4 = array1.clone();
         
         IntTreeSortV1.sort(array1);
         IntTreeSortV2.sort(array2);
+        Arrays.sort(array4);
         
         System.out.println();
     }
@@ -64,6 +75,7 @@ public class Benchmark {
     private static void benchmarkOnRandomIntData(final Random random) {
         final int[] array1 = getRandomIntArray(random);
         final int[] array2 = array1.clone();
+        final int[] array4 = array1.clone();
         
         long startTime = System.currentTimeMillis();
         
@@ -83,11 +95,22 @@ public class Benchmark {
         System.out.printf("V2: %d milliseconds.\n",
                           endTime - startTime);
         
+        startTime = System.currentTimeMillis();
+        
+        Arrays.sort(array4);
+        
+        endTime = System.currentTimeMillis();
+        
+        System.out.printf("Arrays.sort: %d milliseconds.\n",
+                          endTime - startTime);
+        
         System.out.printf("Algorithms agree: %b.\n", 
-                          Arrays.equals(array1, array2));
+                          Arrays.equals(array1, array2) &&
+                          Arrays.equals(array1, array4));
         
         System.out.printf("V1 sorted: %b.\n", isSorted(array1));
         System.out.printf("V2 sorted: %b.\n", isSorted(array2));
+        System.out.printf("Arrays.sort sorted: %b.\n", isSorted(array4));
         
         System.out.println();
     }
@@ -134,6 +157,49 @@ public class Benchmark {
         System.out.println();
     }
     
+    private static void benchmarkOnSparseData(final Random random) {
+        final int[] array1 = getSparseData(random);
+        final int[] array2 = array1.clone();
+        final int[] array4 = array1.clone();
+        
+        long startTime = System.currentTimeMillis();
+        
+        IntTreeSortV1.sort(array1);
+        
+        long endTime = System.currentTimeMillis();
+        
+        System.out.printf("V1: %d milliseconds.\n",
+                          endTime - startTime);
+        
+        startTime = System.currentTimeMillis();
+        
+        IntTreeSortV2.sort(array2);
+        
+        endTime = System.currentTimeMillis();
+        
+        System.out.printf("V2: %d milliseconds.\n",
+                          endTime - startTime);
+        
+        startTime = System.currentTimeMillis();
+        
+        Arrays.sort(array4);
+        
+        endTime = System.currentTimeMillis();
+        
+        System.out.printf("Arrays.sort: %d milliseconds.\n",
+                          endTime - startTime);
+        
+        System.out.printf("Algorithms agree: %b.\n", 
+                          Arrays.equals(array1, array2) &&
+                          Arrays.equals(array1, array4));
+        
+        System.out.printf("V1 sorted: %b.\n", isSorted(array1));
+        System.out.printf("V2 sorted: %b.\n", isSorted(array2));
+        System.out.printf("Arrays.sort sorted: %b.\n", isSorted(array4));
+        
+        System.out.println();
+    }
+    
     private static int[] getDegenerateData(final Random random) {
         
         final int[] array = new int[DEGENERATE_DATA_LENGTH];
@@ -141,6 +207,17 @@ public class Benchmark {
         
         for (int i = 0; i < array.length; i++) {
             array[i] = random.nextInt() & mask;
+        }
+        
+        return array;
+    }
+    
+    private static int[] getSparseData(final Random random) {
+        
+        final int[] array = new int[SPARSE_DATA_LENGTH];
+        
+        for (int i = 0; i < array.length; i++) {
+            array[i] = random.nextInt(SPARSE_DATA_UPPER_BOUND);
         }
         
         return array;
